@@ -1,13 +1,15 @@
-import ContexWindow from './components/ContexWindow'
-import './App.css'
+import React from "react";
+import MainPage from "./views/MainPage";
+import "./App.css";
 
-function App() {
-
+const App: React.FC = () => {
   return (
-    <>
-      <ContexWindow />
-    </>
-  )
-}
+    <div className="w-full h-full">
+      <div className="flex-col w-3/5 h-4/5 mr-auto ml-auto">
+        <MainPage />
+      </div>
+    </div>
+  );
+};
 
-export default App
+export default App;
