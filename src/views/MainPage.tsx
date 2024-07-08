@@ -28,7 +28,10 @@ const MainPage: React.FC = () => {
 
   const handlePlatformSelect = (platform: string) => {
     setSelectedPlatform(platform);
-    setSelectedModel(modelOptions[platform][0]); // Select the first model of the selected platform
+    const selectedModels = modelOptions.platforms[platform];
+    if (selectedModels) {
+      setSelectedModel(selectedModels[0]); // Select the first model of the selected platform
+    }
   };
 
   const handleModelSelect = (model: string) => {
@@ -50,7 +53,7 @@ const MainPage: React.FC = () => {
             onOptionSelect={handlePlatformSelect}
           />
           <LLMDropdown
-            options={modelOptions[selectedPlatform] || []}
+            options={modelOptions.platforms[selectedPlatform] || []}
             selectedOption={selectedModel}
             onOptionSelect={handleModelSelect}
           />

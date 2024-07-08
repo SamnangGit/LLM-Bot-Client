@@ -13,22 +13,26 @@ interface FetchDataResult {
 
 const useFetchData = (): FetchDataResult => {
   const [platformOptions, setPlatformOptions] = useState<string[]>([]);
-  const [modelOptions, setModelOptions] = useState<ModelOptions>({});
+  const [modelOptions, setModelOptions] = useState<ModelOptions>({ platforms: {} });
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<string>("");
 
   const fetchData = async () => {
     try {
       const response = await getLLMPlatforms();
-      const data = response.data;
+      const data = response.data.platforms;
 
       // Extract platform names and model options from API response
       const platforms = Object.keys(data);
       const models = Object.values(data);
+      // Prepare new ModelOptions object
+      const newModelOptions: ModelOptions = {
+        platforms: data,
+      };
 
       // Set platform and model options in state
       setPlatformOptions(platforms);
-      setModelOptions(data);
+      setModelOptions(newModelOptions);
 
       // Select default platform and model
       setSelectedPlatform(platforms[0]);
@@ -45,6 +49,7 @@ const useFetchData = (): FetchDataResult => {
   return {
     platformOptions,
     modelOptions,
+    platformSettings,
     selectedPlatform,
     setSelectedPlatform,
     selectedModel,
