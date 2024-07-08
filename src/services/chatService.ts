@@ -1,7 +1,5 @@
 import axios from "axios";
 import { createRequestBody } from "../requests/requestBody";
-import { ModelOptions } from "../entities/ModelOptions";
-
 
 export const sendChatRequest = (model: string, prompt: string) => {
   const requestBody = createRequestBody(model, prompt);
@@ -9,5 +7,5 @@ export const sendChatRequest = (model: string, prompt: string) => {
 };
 
 export const getLLMPlatforms = () => {
-  return axios.get<ModelOptions>("http://127.0.0.1:8000/platforms");
+  return axios.get("http://127.0.0.1:8000/platforms");
 };

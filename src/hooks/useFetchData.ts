@@ -5,38 +5,42 @@ import { getLLMPlatforms } from "../services/chatService";
 interface FetchDataResult {
   platformOptions: string[];
   modelOptions: ModelOptions;
-  selectedPlatform: string; // Ensure selectedPlatform is declared here
-  setSelectedPlatform: Dispatch<SetStateAction<string>>; // Include setter for selectedPlatform
-  selectedModel: string; // Ensure selectedModel is declared here
-  setSelectedModel: Dispatch<SetStateAction<string>>; // Include setter for selectedModel
+  platformSettings: Record<string, string[]>;
+  selectedPlatform: string;
+  setSelectedPlatform: Dispatch<SetStateAction<string>>;
+  selectedModel: string;
+  setSelectedModel: Dispatch<SetStateAction<string>>;
 }
 
 const useFetchData = (): FetchDataResult => {
   const [platformOptions, setPlatformOptions] = useState<string[]>([]);
   const [modelOptions, setModelOptions] = useState<ModelOptions>({ platforms: {} });
+  const [platformSettings, setPlatformSettings] = useState<Record<string, string[]>>({});
   const [selectedPlatform, setSelectedPlatform] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<string>("");
 
   const fetchData = async () => {
     try {
       const response = await getLLMPlatforms();
-      const data = response.data.platforms;
+      const data = response.data as { platforms: { [key: string]: string[] }; platform_settings: Record<string, string[]> }; // Type assertion
 
       // Extract platform names and model options from API response
-      const platforms = Object.keys(data);
-      const models = Object.values(data);
-      // Prepare new ModelOptions object
-      const newModelOptions: ModelOptions = {
-        platforms: data,
+      const platforms = Object.keys(data.platforms);
+      const modelOptions = { platforms: data.platforms
       };
 
       // Set platform and model options in state
       setPlatformOptions(platforms);
-      setModelOptions(newModelOptions);
+      setModelOptions(modelOptions);
+      setPlatformSettings(data.platform_settings);
 
       // Select default platform and model
-      setSelectedPlatform(platforms[0]);
-      setSelectedModel(models[0][0]); // Selecting the first model of the first platform
+      if (platforms.length > 0) {
+        setSelectedPlatform(platforms[0]);
+        if (data.platforms[platforms[0]] && data.platforms[platforms[0]].length > 0) {
+          setSelectedModel(data.platforms[platforms[0]][0]);
+        }
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }

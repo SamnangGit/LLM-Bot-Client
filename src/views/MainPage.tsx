@@ -3,7 +3,7 @@ import LLMDropdown from "../components/LLMDropdown";
 import TokenCounter from "../components/TokenCounter";
 import MainChatWindow from "../components/MainChatWindow";
 import PromptInput from "../components/PromptInput";
-import useFetchData from "../hooks/useFetchData"; // Import custom hook
+import useFetchData from "../hooks/useFetchData";
 import LLMSetting from "../components/LLMSetting";
 import { ResponseBody } from "../entities/ResponseBody";
 
@@ -12,25 +12,26 @@ const MainPage: React.FC = () => {
     platformOptions,
     modelOptions,
     selectedPlatform,
+    platformSettings,
     setSelectedPlatform,
     selectedModel,
     setSelectedModel,
-  } = useFetchData(); // Destructure relevant state and setters
+  } = useFetchData();
 
   const [showSettings, setShowSettings] = useState(false);
   const [chatResponse, setChatResponse] = useState<string | null>(null);
-  const [tokenCount, setTokenCount] = useState<number>(0); // Initialize token count state
+  const [tokenCount, setTokenCount] = useState<number>(0);
 
   const handleChatResponse = (response: ResponseBody) => {
     setChatResponse(response.response.content);
-    setTokenCount(response.response.response_metadata.token_usage.total_tokens); // Update token count state
+    setTokenCount(response.response.response_metadata.token_usage.total_tokens);
   };
 
   const handlePlatformSelect = (platform: string) => {
     setSelectedPlatform(platform);
     const selectedModels = modelOptions.platforms[platform];
     if (selectedModels) {
-      setSelectedModel(selectedModels[0]); // Select the first model of the selected platform
+      setSelectedModel(selectedModels[0]);
     }
   };
 
@@ -68,7 +69,11 @@ const MainPage: React.FC = () => {
           </button>
           {showSettings && (
             <div className="absolute top-full mt-2 left-0">
-              <LLMSetting onClose={() => setShowSettings(false)} />
+              <LLMSetting
+                onClose={() => setShowSettings(false)}
+                platformSettings={platformSettings}
+                selectedPlatform={selectedPlatform}
+              />
             </div>
           )}
         </div>
