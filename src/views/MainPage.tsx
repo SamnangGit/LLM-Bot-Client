@@ -5,6 +5,7 @@ import MainChatWindow from "../components/MainChatWindow";
 import PromptInput from "../components/PromptInput";
 import useFetchData from "../hooks/useFetchData"; // Import custom hook
 import LLMSetting from "../components/LLMSetting";
+import { ResponseBody } from "../entities/ResponseBody";
 
 const MainPage: React.FC = () => {
   const {
@@ -18,9 +19,11 @@ const MainPage: React.FC = () => {
 
   const [showSettings, setShowSettings] = useState(false);
   const [chatResponse, setChatResponse] = useState<string | null>(null);
+  const [tokenCount, setTokenCount] = useState<number>(0); // Initialize token count state
 
-  const handleChatResponse = (response: string) => {
-    setChatResponse(response);
+  const handleChatResponse = (response: ResponseBody) => {
+    setChatResponse(response.response.content);
+    setTokenCount(response.response.response_metadata.token_usage.total_tokens); // Update token count state
   };
 
   const handlePlatformSelect = (platform: string) => {
@@ -39,7 +42,7 @@ const MainPage: React.FC = () => {
   return (
     <div className="w-full h-full">
       <div className="flex items-center space-x-4 mt-4">
-        <TokenCounter />
+        <TokenCounter tokenCount={tokenCount} />
         <div className="flex space-x-4">
           <LLMDropdown
             options={platformOptions}

@@ -1,5 +1,7 @@
+// src/entities/PromptInputProps.ts
+import { ResponseBody } from "./ResponseBody";
+
 export interface PromptInputProps {
-    onChatResponse: (response: string) => void;
-    model: string;
-  }
-  
+  onChatResponse: (response: ResponseBody) => void;
+  model: string;
+}
