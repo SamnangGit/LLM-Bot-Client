@@ -19,12 +19,24 @@ const MainPage: React.FC = () => {
   } = useFetchData();
 
   const [showSettings, setShowSettings] = useState(false);
-  const [chatResponse, setChatResponse] = useState<string | null>(null);
+  const [chatHistory, setChatHistory] = useState<
+    Array<{ role: string; content: string }>
+  >([]);
   const [tokenCount, setTokenCount] = useState<number>(0);
 
   const handleChatResponse = (response: ResponseBody) => {
-    setChatResponse(response.response.content);
+    setChatHistory((prevHistory) => [
+      ...prevHistory,
+      { role: "assistant", content: response.response.content },
+    ]);
     setTokenCount(response.response.response_metadata.token_usage.total_tokens);
+  };
+
+  const handleUserPrompt = (prompt: string) => {
+    setChatHistory((prevHistory) => [
+      ...prevHistory,
+      { role: "user", content: prompt },
+    ]);
   };
 
   const handlePlatformSelect = (platform: string) => {
@@ -79,11 +91,12 @@ const MainPage: React.FC = () => {
         </div>
       </div>
       <div className="w-full h-full p-10">
-        <MainChatWindow response={chatResponse} />
+        <MainChatWindow chatHistory={chatHistory} />
       </div>
       <div className="w-11/12 mx-auto">
         <PromptInput
           onChatResponse={handleChatResponse}
+          onUserPrompt={handleUserPrompt}
           model={selectedModel}
         />
       </div>

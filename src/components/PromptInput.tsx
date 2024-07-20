@@ -4,7 +4,11 @@ import usePromptInput from "../hooks/usePromptInput";
 import useChatService from "../hooks/useChatService";
 import arrowUpImage from "../assets/arrow-up-50.png";
 
-const PromptInput: React.FC<PromptInputProps> = ({ onChatResponse, model }) => {
+const PromptInput: React.FC<PromptInputProps> = ({
+  onChatResponse,
+  onUserPrompt,
+  model,
+}) => {
   const {
     prompt,
     setPrompt,
@@ -17,6 +21,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ onChatResponse, model }) => {
 
   const handleFormSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     if (e) e.preventDefault();
+    onUserPrompt(prompt); // Notify MainPage of the user prompt
     setPrompt(""); // Clear the input before the request
     await handleSubmit(prompt);
     setPrompt(""); // Clear the input after the request
