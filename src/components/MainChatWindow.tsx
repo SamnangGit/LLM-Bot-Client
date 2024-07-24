@@ -32,10 +32,12 @@ const MainChatWindow: React.FC<MainChatWindowProps> = ({ chatHistory }) => {
               } mb-3`}
             >
               <div
-                className={`p-4 rounded-lg ${
+                className={` ${
+                  item.role === "user" ? "p-3" : "p-4"
+                } rounded-lg ${
                   item.role === "user"
                     ? "bg-yellow-400 text-black max-w-xl text-right"
-                    : "bg-gray-800 w-full text-left"
+                    : "bg-black w-full text-left"
                 }`}
               >
                 {renderContent(item.content)}
