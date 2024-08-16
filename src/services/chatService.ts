@@ -3,7 +3,7 @@ import { createRequestBody } from "../requests/requestBody";
 
 export const sendChatRequest = (model: string, prompt: string) => {
   const requestBody = createRequestBody(model, prompt);
-  return axios.post("http://127.0.0.1:8000/chat/custom", requestBody);
+  return axios.post("http://127.0.0.1:8000/chat/custom", requestBody, {withCredentials: true});
 };
 
 export const getLLMPlatforms = () => {
