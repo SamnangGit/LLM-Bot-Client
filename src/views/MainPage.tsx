@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import LLMDropdown from "../components/LLMDropdown";
 import TokenCounter from "../components/TokenCounter";
 import MainChatWindow from "../components/MainChatWindow";
@@ -23,6 +23,7 @@ const MainPage: React.FC = () => {
     Array<{ role: string; content: string }>
   >([]);
   const [tokenCount, setTokenCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
 
   const handleChatResponse = (response: ResponseBody) => {
     setChatHistory((prevHistory) => [
@@ -30,6 +31,7 @@ const MainPage: React.FC = () => {
       { role: "assistant", content: response.response.content },
     ]);
     setTokenCount(response.response.response_metadata.token_usage.total_tokens);
+    setLoading(false);
   };
 
   const handleUserPrompt = (prompt: string) => {
@@ -37,6 +39,7 @@ const MainPage: React.FC = () => {
       ...prevHistory,
       { role: "user", content: prompt },
     ]);
+    setLoading(true);
   };
 
   const handlePlatformSelect = (platform: string) => {
@@ -91,7 +94,8 @@ const MainPage: React.FC = () => {
         </div>
       </div>
       <div className="w-full h-full p-10">
-        <MainChatWindow chatHistory={chatHistory} />
+        <MainChatWindow chatHistory={chatHistory} loading={loading} />{" "}
+        {/* Pass loading state */}
       </div>
       <div className="w-11/12 mx-auto">
         <PromptInput

@@ -7,5 +7,5 @@ export const sendChatRequest = (model: string, prompt: string) => {
 };
 
 export const getLLMPlatforms = () => {
-  return axios.get("http://127.0.0.1:8000/platforms");
+  return axios.get("http://127.0.0.1:8000/platforms", {withCredentials: true});
 };

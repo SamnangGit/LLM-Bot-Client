@@ -2,12 +2,17 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 interface MainChatWindowProps {
   chatHistory: Array<{ role: string; content: string }>;
+  loading: boolean; // Add loading as a prop
 }
 
-const MainChatWindow: React.FC<MainChatWindowProps> = ({ chatHistory }) => {
+const MainChatWindow: React.FC<MainChatWindowProps> = ({
+  chatHistory,
+  loading,
+}) => {
   const renderContent = (content: string) => {
     if (content.startsWith("```")) {
       return (
@@ -46,6 +51,12 @@ const MainChatWindow: React.FC<MainChatWindowProps> = ({ chatHistory }) => {
           ))
         ) : (
           <div className="text-gray-500">No messages yet.</div>
+        )}
+
+        {loading && (
+          <div className="flex justify-start mt-4">
+            <LoadingSpinner />
+          </div>
         )}
       </div>
     </div>
