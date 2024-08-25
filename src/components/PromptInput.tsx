@@ -3,7 +3,6 @@ import { PromptInputProps } from "../entities/PromptInputProps";
 import usePromptInput from "../hooks/usePromptInput";
 import useChatService from "../hooks/useChatService";
 import arrowUpImage from "../assets/arrow-up-50.png";
-import LoadingSpinner from "../components/LoadingSpinner"; // Import the loading spinner component
 
 const PromptInput: React.FC<PromptInputProps> = ({
   onChatResponse,

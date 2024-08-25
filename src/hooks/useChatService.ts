@@ -19,6 +19,7 @@ const useChatService = (
       console.error("Error:", error);
     } finally {
       setLoading(false);
+      console.log("cookies: " + document.cookie);
     }
   };
 
