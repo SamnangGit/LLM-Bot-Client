@@ -49,13 +49,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
           className="absolute top-0 right-0 mt-2 mr-2 bg-yellow-400 p-3 rounded-xl active:bg-yellow-500"
           disabled={loading}
         >
-          {loading ? (
-            <div className="flex justify-center items-center h-6 w-6">
-              <LoadingSpinner /> {/* Render LoadingSpinner when loading */}
-            </div>
-          ) : (
-            <img src={arrowUpImage} className="h-6 w-6" alt="Send" />
-          )}
+          {<img src={arrowUpImage} className="h-6 w-6" alt="Send" />}
         </button>
       </form>
     </div>
