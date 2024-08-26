@@ -5,46 +5,32 @@ interface LLMSettingProps {
   onClose: () => void;
   platformSettings: Record<string, string[]>;
   selectedPlatform: string;
+  onSettingsChange: (settings: SettingItems[]) => void;
+  initialSettings: SettingItems[];
 }
 
 const LLMSetting: React.FC<LLMSettingProps> = ({
   onClose,
-  platformSettings,
-  selectedPlatform,
+  onSettingsChange,
+  initialSettings,
 }) => {
-  const [settings, setSettings] = useState<SettingItems[]>([]);
+  const [settings, setSettings] = useState<SettingItems[]>(initialSettings);
 
   useEffect(() => {
-    // Dynamically generate settings based on the selected platform
-    const supportedSettings = Object.keys(platformSettings).filter((setting) =>
-      platformSettings[setting].includes(
-        `${selectedPlatform.toLowerCase()}_platform`
-      )
-    );
-
-    const initialSettings: SettingItems[] = supportedSettings.map((setting) => {
-      switch (setting) {
-        case "Temperature":
-          return { name: "Temperature", value: 0.5, min: 0, max: 1 };
-        case "Top_P":
-          return { name: "Top P", value: 0.5, min: 0, max: 1 };
-        case "Top_K":
-          return { name: "Top K", value: 50000, min: 0, max: 100000 };
-        default:
-          return { name: setting, value: 0, min: 0, max: 1 };
-      }
-    });
-
     setSettings(initialSettings);
-  }, [platformSettings, selectedPlatform]);
+  }, [initialSettings]);
 
   const handleSettingChange = (index: number, newValue: number) => {
-    const newSettings = [...settings];
-    newSettings[index].value = Math.min(
-      Math.max(newValue, newSettings[index].min),
-      newSettings[index].max
+    const newSettings = settings.map((setting, i) =>
+      i === index
+        ? {
+            ...setting,
+            value: Math.min(Math.max(newValue, setting.min), setting.max),
+          }
+        : setting
     );
     setSettings(newSettings);
+    onSettingsChange(newSettings);
   };
 
   return (
