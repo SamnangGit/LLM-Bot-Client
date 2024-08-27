@@ -90,10 +90,13 @@ const MainPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full h-full">
-      <div className="flex items-center space-x-4 mt-4">
-        <TokenCounter tokenCount={tokenCount} />
-        <div className="flex space-x-4">
+    <div className="w-full h-full flex flex-col">
+      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 p-4">
+        <div className="hidden lg:block">
+          <TokenCounter tokenCount={tokenCount} />
+        </div>
+
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
           <LLMDropdown
             options={platformOptions}
             selectedOption={selectedPlatform}
@@ -105,7 +108,8 @@ const MainPage: React.FC = () => {
             onOptionSelect={handleModelSelect}
           />
         </div>
-        <div className="relative">
+
+        <div className="relative hidden lg:block">
           <button onClick={toggleSettings} className="w-10 h-10 rounded-full">
             <img
               src={`src/assets/${showSettings ? "minus" : "setting"}.png`}
@@ -114,7 +118,7 @@ const MainPage: React.FC = () => {
             />
           </button>
           {showSettings && (
-            <div className="absolute top-full mt-2 left-0">
+            <div className="absolute top-full mt-2 right-0 sm:right-auto sm:left-0 z-10">
               <LLMSetting
                 onClose={() => setShowSettings(false)}
                 platformSettings={platformSettings}
@@ -126,10 +130,12 @@ const MainPage: React.FC = () => {
           )}
         </div>
       </div>
-      <div className="w-full h-full p-10">
+
+      <div className="flex-grow overflow-auto p-4 sm:p-6 md:p-8 lg:p-10">
         <MainChatWindow chatHistory={chatHistory} loading={loading} />
       </div>
-      <div className="w-11/12 mx-auto">
+
+      <div className="w-full p-4">
         <PromptInput
           onChatResponse={handleChatResponse}
           onUserPrompt={handleUserPrompt}
