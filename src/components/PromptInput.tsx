@@ -8,6 +8,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
   onChatResponse,
   onUserPrompt,
   model,
+  settings,
 }) => {
   const {
     prompt,
@@ -17,7 +18,12 @@ const PromptInput: React.FC<PromptInputProps> = ({
     handlePromptChange,
     handleKeyPress,
   } = usePromptInput();
-  const { handleSubmit, loading } = useChatService(model, onChatResponse);
+
+  const { handleSubmit, loading } = useChatService(
+    model,
+    onChatResponse,
+    settings
+  );
 
   const handleFormSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     if (e) e.preventDefault();
@@ -36,7 +42,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
             minHeight: "40px",
             maxHeight: "120px",
             height: `${inputHeight}px`,
-          }} // Min and max height settings
+          }}
           value={prompt}
           onChange={handlePromptChange}
           onKeyPress={(e) => handleKeyPress(e, handleFormSubmit)}
@@ -48,7 +54,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
           className="absolute top-0 right-0 mt-2 mr-2 bg-yellow-400 p-3 rounded-xl active:bg-yellow-500"
           disabled={loading}
         >
-          {<img src={arrowUpImage} className="h-6 w-6" alt="Send" />}
+          <img src={arrowUpImage} className="h-6 w-6" alt="Send" />
         </button>
       </form>
     </div>

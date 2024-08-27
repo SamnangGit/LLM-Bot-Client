@@ -134,7 +134,7 @@ const MainPage: React.FC = () => {
           onChatResponse={handleChatResponse}
           onUserPrompt={handleUserPrompt}
           model={selectedModel}
-          // settings={currentSettings}
+          settings={currentSettings}
         />
       </div>
     </div>
