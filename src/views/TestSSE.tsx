@@ -19,7 +19,7 @@ const useChatWithAI = () => {
       ],
       temperature: 0.2,
       top_p: 0.5,
-      top_k: 0,
+      top_k: 10000,
     };
 
     try {
@@ -38,6 +38,7 @@ const useChatWithAI = () => {
       ) => {
         if (result.done) return;
         const token = decoderRef.current.decode(result.value!);
+        console.log(token);
         if (token.endsWith(".") || token.endsWith("!") || token.endsWith("?")) {
           setResult((prevResult) => prevResult + token + "<br>");
         } else {

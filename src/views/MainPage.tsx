@@ -19,6 +19,8 @@ const MainPage: React.FC = () => {
     setSelectedModel,
   } = useFetchData();
 
+  const [isPlatformOpen, setIsPlatformOpen] = useState(false);
+
   const [showSettings, setShowSettings] = useState(false);
   const [chatHistory, setChatHistory] = useState<
     Array<{ role: string; content: string }>
@@ -89,6 +91,10 @@ const MainPage: React.FC = () => {
     console.log("Updated settings:", newSettings);
   }, []);
 
+  const handlePlatformOpen = () => {
+    setIsPlatformOpen(!isPlatformOpen);
+  };
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 p-4">
@@ -96,17 +102,34 @@ const MainPage: React.FC = () => {
           <TokenCounter tokenCount={tokenCount} />
         </div>
 
-        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-          <LLMDropdown
-            options={platformOptions}
-            selectedOption={selectedPlatform}
-            onOptionSelect={handlePlatformSelect}
-          />
-          <LLMDropdown
-            options={modelOptions.platforms[selectedPlatform] || []}
-            selectedOption={selectedModel}
-            onOptionSelect={handleModelSelect}
-          />
+        <div className="relative w-full sm:w-auto">
+          <button
+            onClick={handlePlatformOpen}
+            className="p-2 focus:outline-none lg:hidden"
+            aria-label="Toggle Settings"
+          >
+            <div className="w-6 h-6 flex flex-col justify-around">
+              <div className="w-6 h-0.5 bg-gray-600 rounded-full"></div>
+              <div className="w-6 h-0.5 bg-gray-600 rounded-full"></div>
+              <div className="w-6 h-0.5 bg-gray-600 rounded-full"></div>
+            </div>
+          </button>
+          <div
+            className={`sm:flex ${
+              isPlatformOpen ? "block" : "hidden"
+            } flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-2 sm:mt-0`}
+          >
+            <LLMDropdown
+              options={platformOptions}
+              selectedOption={selectedPlatform}
+              onOptionSelect={handlePlatformSelect}
+            />
+            <LLMDropdown
+              options={modelOptions.platforms[selectedPlatform] || []}
+              selectedOption={selectedModel}
+              onOptionSelect={handleModelSelect}
+            />
+          </div>
         </div>
 
         <div className="relative hidden lg:block">
