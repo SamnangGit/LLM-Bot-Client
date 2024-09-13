@@ -23,7 +23,7 @@ const useChatWithAI = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:8000/stream_chat_es", {
+      const response = await fetch("http://localhost:8000/stream_chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

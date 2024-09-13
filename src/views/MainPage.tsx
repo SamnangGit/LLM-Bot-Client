@@ -7,6 +7,8 @@ import useFetchData from "../hooks/useFetchData";
 import LLMSetting from "../components/LLMSetting";
 import { ResponseBody } from "../entities/ResponseBody";
 import { SettingItems } from "../entities/SettingItems";
+import Button from "../components/Button";
+import AuthPopup from "../components/AuthPopup";
 
 const MainPage: React.FC = () => {
   const {
@@ -28,6 +30,8 @@ const MainPage: React.FC = () => {
   const [tokenCount, setTokenCount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [currentSettings, setCurrentSettings] = useState<SettingItems[]>([]);
+
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
 
   // Initialize settings when the component mounts or when the platform changes
   useEffect(() => {
@@ -95,6 +99,26 @@ const MainPage: React.FC = () => {
     setIsPlatformOpen(!isPlatformOpen);
   };
 
+  const handleLoginClick = () => {
+    setShowAuthPopup(true);
+  };
+
+  const handleCloseAuthPopup = () => {
+    setShowAuthPopup(false);
+  };
+
+  const handleLogin = (username: string, password: string) => {
+    console.log("Login submitted:", { username, password });
+    // Implement your login logic here
+    setShowAuthPopup(false);
+  };
+
+  const handleSignup = (email: string, username: string, password: string) => {
+    console.log("Signup submitted:", { email, username, password });
+    // Implement your signup logic here
+    setShowAuthPopup(false);
+  };
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 p-4">
@@ -152,6 +176,14 @@ const MainPage: React.FC = () => {
             </div>
           )}
         </div>
+
+        <div>
+          <Button
+            text="Login"
+            onClick={handleLoginClick}
+            className="absolute right-6 top-4"
+          />
+        </div>
       </div>
 
       <div className="flex-grow overflow-auto p-4 sm:p-6 md:p-8 lg:p-10">
@@ -166,6 +198,13 @@ const MainPage: React.FC = () => {
           settings={currentSettings}
         />
       </div>
+      {showAuthPopup && (
+        <AuthPopup
+          onClose={handleCloseAuthPopup}
+          onLogin={handleLogin}
+          onSignup={handleSignup}
+        />
+      )}
     </div>
   );
 };
