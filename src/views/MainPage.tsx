@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import LLMDropdown from "../components/LLMDropdown";
 import TokenCounter from "../components/TokenCounter";
 import MainChatWindow from "../components/MainChatWindow";
@@ -7,8 +7,14 @@ import useFetchData from "../hooks/useFetchData";
 import LLMSetting from "../components/LLMSetting";
 import { ResponseBody } from "../entities/ResponseBody";
 import { SettingItems } from "../entities/SettingItems";
-import Button from "../components/Button";
 import AuthPopup from "../components/AuthPopup";
+import { jwtDecode } from "jwt-decode";
+import Button from "../components/Button";
+
+interface DecodedToken {
+  username: string;
+  email: string;
+}
 
 const MainPage: React.FC = () => {
   const {
@@ -22,7 +28,6 @@ const MainPage: React.FC = () => {
   } = useFetchData();
 
   const [isPlatformOpen, setIsPlatformOpen] = useState(false);
-
   const [showSettings, setShowSettings] = useState(false);
   const [chatHistory, setChatHistory] = useState<
     Array<{ role: string; content: string }>
@@ -32,8 +37,12 @@ const MainPage: React.FC = () => {
   const [currentSettings, setCurrentSettings] = useState<SettingItems[]>([]);
 
   const [showAuthPopup, setShowAuthPopup] = useState(false);
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
-  // Initialize settings when the component mounts or when the platform changes
+  const [showLogoutDropdown, setShowLogoutDropdown] = useState(false);
+
+  // Handle platform and settings initialization
   useEffect(() => {
     const supportedSettings = Object.keys(platformSettings).filter((setting) =>
       platformSettings[setting].includes(
@@ -92,32 +101,49 @@ const MainPage: React.FC = () => {
 
   const handleSettingsChange = useCallback((newSettings: SettingItems[]) => {
     setCurrentSettings(newSettings);
-    console.log("Updated settings:", newSettings);
   }, []);
 
   const handlePlatformOpen = () => {
     setIsPlatformOpen(!isPlatformOpen);
   };
 
-  const handleLoginClick = () => {
-    setShowAuthPopup(true);
+  const handleLoginSuccess = (token: string) => {
+    try {
+      const decoded: DecodedToken = jwtDecode(token);
+      setUsername(decoded.username);
+      setAuthToken(token);
+      localStorage.setItem("token", token); // Store token for future requests
+    } catch (error) {
+      console.error("Failed to decode JWT", error);
+    }
   };
 
-  const handleCloseAuthPopup = () => {
+  const handleLogout = () => {
+    setUsername(null);
+    setAuthToken(null);
+    localStorage.removeItem("token"); // Remove token on logout
+  };
+
+  const handleAuthPopupClose = () => {
     setShowAuthPopup(false);
   };
 
-  const handleLogin = (username: string, password: string) => {
-    console.log("Login submitted:", { username, password });
-    // Implement your login logic here
-    setShowAuthPopup(false);
+  const handleWelcomeClick = () => {
+    setShowLogoutDropdown((prev) => !prev);
   };
 
-  const handleSignup = (email: string, username: string, password: string) => {
-    console.log("Signup submitted:", { email, username, password });
-    // Implement your signup logic here
-    setShowAuthPopup(false);
-  };
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
+        setUsername(decoded.username);
+        setAuthToken(token);
+      } catch (error) {
+        console.error("Invalid token in local storage", error);
+      }
+    }
+  }, []);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -177,12 +203,29 @@ const MainPage: React.FC = () => {
           )}
         </div>
 
-        <div>
+        <div className="flex items-center">
           <Button
-            text="Login"
-            onClick={handleLoginClick}
+            text={username ? `Welcome, ${username}` : "Login"}
+            onClick={
+              username ? handleWelcomeClick : () => setShowAuthPopup(true)
+            }
             className="absolute right-6 top-4"
           />
+
+          {showLogoutDropdown && username && (
+            <Button
+              text="Logout"
+              onClick={handleLogout}
+              className="absolute right-6 top-16"
+            />
+          )}
+
+          {showAuthPopup && (
+            <AuthPopup
+              onClose={() => setShowAuthPopup(false)}
+              onLoginSuccess={handleLoginSuccess}
+            />
+          )}
         </div>
       </div>
 
@@ -198,13 +241,6 @@ const MainPage: React.FC = () => {
           settings={currentSettings}
         />
       </div>
-      {showAuthPopup && (
-        <AuthPopup
-          onClose={handleCloseAuthPopup}
-          onLogin={handleLogin}
-          onSignup={handleSignup}
-        />
-      )}
     </div>
   );
 };

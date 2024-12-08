@@ -1,27 +1,53 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 interface AuthPopupProps {
   onClose: () => void;
-  onLogin: (username: string, password: string) => void;
-  onSignup: (email: string, username: string, password: string) => void;
+  onLoginSuccess: (token: string) => void;
 }
 
-const AuthPopup: React.FC<AuthPopupProps> = ({
-  onClose,
-  onLogin,
-  onSignup,
-}) => {
+const AuthPopup: React.FC<AuthPopupProps> = ({ onClose, onLoginSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/auth/login", {
+        email,
+        password,
+      });
+      const { token } = response.data;
+      onLoginSuccess(token); // Pass the token to the parent component
+      onClose(); // Close popup on success
+    } catch (err) {
+      setError("Login failed. Please check your credentials.");
+    }
+  };
+
+  const handleSignup = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/auth/signup", {
+        email,
+        username,
+        password,
+      });
+      const { token } = response.data;
+      onLoginSuccess(token); // Pass the token to the parent component
+      onClose(); // Close popup on success
+    } catch (err) {
+      setError("Signup failed. Please try again.");
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isLogin) {
-      onLogin(username, password);
+      handleLogin();
     } else {
-      onSignup(email, username, password);
+      handleSignup();
     }
   };
 
@@ -30,6 +56,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
     setEmail("");
     setUsername("");
     setPassword("");
+    setError(null); // Clear error when switching modes
   };
 
   return (
@@ -47,40 +74,42 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 h-8 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required={!isLogin}
-              />
-            </div>
-          )}
+          {/* Show email input for both login and signup */}
           <div>
             <label
-              htmlFor="username"
+              htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              Username
+              Email
             </label>
             <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 h-8 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               required
             />
           </div>
+          {/* Show username input only during signup */}
+          {!isLogin && (
+            <div>
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="mt-1 h-8 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                required
+              />
+            </div>
+          )}
           <div>
             <label
               htmlFor="password"
@@ -97,6 +126,7 @@ const AuthPopup: React.FC<AuthPopupProps> = ({
               required
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-black bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
